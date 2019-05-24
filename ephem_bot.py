@@ -12,44 +12,46 @@
   бота отвечать, в каком созвездии сегодня находится планета.
 
 """
-import logging
 
+import logging
+import settings
+import ephem
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO,
-                    filename='bot.log'
-)
-
-
-PROXY = {
-    'proxy_url': 'socks5://t1.learn.python.ru:1080',
-    'urllib3_proxy_kwargs': {
-        'username': 'learn', 
-        'password': 'python'
-    }
-}
+logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(message)s',
+                    level = logging.INFO,
+                    filename = 'bot.log')
 
 
 def greet_user(bot, update):
     text = 'Вызван /start'
-    print(text)
+    logging.info(text)
     update.message.reply_text(text)
 
-
 def talk_to_me(bot, update):
-    user_text = update.message.text 
-    print(user_text)
+    user_text = "Привет {}! Ты написал: {}".format(update.message.chat.first_name, update.message.text)
+    logging.info('User: %s, Chat id: %s, Message: %s', update.message.chat.username, 
+    update.message.chat.id, update.message.text)
     update.message.reply_text(user_text)
- 
+
+def planet_name(bot, update):
+    planet_name = update.message.text.split()
+    if planet_name[-1] == 'Mars':
+        date = ephem.now()
+        planet = ephem.Mars(date)
+        const = ephem.constellation(planet)
+        text = f'Сегодня планета Марс находится в созвездии {const[1]}'
+        update.message.reply_text(text)
+        
 
 def main():
-    mybot = Updater("КЛЮЧ, КОТОРЫЙ НАМ ВЫДАЛ BotFather", request_kwargs=PROXY)
+    mybot = Updater(settings.API_KEY, request_kwargs = settings.PROXY)
+    logging.info('Бот запускается')    
     
     dp = mybot.dispatcher
-    dp.add_handler(CommandHandler("start", greet_user))
+    dp.add_handler(CommandHandler('start', greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
-    
+    dp.add_handler(CommandHandler('planet', planet_name))
     mybot.start_polling()
     mybot.idle()
        

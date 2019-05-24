@@ -19,14 +19,15 @@ def ask_user_dict():
     """
     Замените pass на ваш код
     """
-    while True:
+    flag = True
+    while flag:
         user_say = input('Пользователь: ')
-        for i in dict.keys():
+        for i in d.keys():
             if user_say == i:
-                print(dict[i])
-                break
+                print(d[i])
+                flag = False
 
-dict = {'Как дела?': 'Хорошо!', 'Что делаешь?': 'Программирую'}
+d = {'Как дела?': 'Хорошо!', 'Что делаешь?': 'Программирую'}
   
 if __name__ == "__main__":
     ask_user_dict()
