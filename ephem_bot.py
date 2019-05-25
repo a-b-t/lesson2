@@ -35,14 +35,13 @@ def talk_to_me(bot, update):
     update.message.reply_text(user_text)
 
 def planet_name(bot, update):
-    planet_name = update.message.text.split()
-    if planet_name[-1] == 'Mars':
-        date = ephem.now()
-        planet = ephem.Mars(date)
-        const = ephem.constellation(planet)
-        text = f'Сегодня планета Марс находится в созвездии {const[1]}'
-        update.message.reply_text(text)
-        
+    planet_name = update.message.text.split()[1]
+    date = ephem.now()
+    planet = getattr(ephem, planet_name)(date)
+    const = ephem.constellation(planet)
+    text = f'Сегодня планета {planet_name} находится в созвездии {const[1]}'
+    update.message.reply_text(text)
+
 
 def main():
     mybot = Updater(settings.API_KEY, request_kwargs = settings.PROXY)
