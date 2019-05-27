@@ -42,6 +42,18 @@ def planet_name(bot, update):
     text = f'Сегодня планета {planet_name} находится в созвездии {const[1]}'
     update.message.reply_text(text)
 
+def wordcount(bot, update):
+    words = update.message.text.split()[1:]
+    if words != []:
+        answer = "{} слова".format(len(words))
+    else:
+        answer = 'Забыл ввести фразу!'
+    update.message.reply_text(answer)
+
+def next_full_moon(bot, update):
+    date = ephem.now()
+    text = 'Ближайшее полнолуние будет {}'.format(ephem.next_full_moon(date))
+    update.message.reply_text(text)
 
 def main():
     mybot = Updater(settings.API_KEY, request_kwargs = settings.PROXY)
@@ -51,6 +63,8 @@ def main():
     dp.add_handler(CommandHandler('start', greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     dp.add_handler(CommandHandler('planet', planet_name))
+    dp.add_handler(CommandHandler('wordcount', wordcount))
+    dp.add_handler(CommandHandler('next_full_moon', next_full_moon))
     mybot.start_polling()
     mybot.idle()
        
